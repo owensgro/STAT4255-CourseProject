@@ -1,0 +1,53 @@
+---
+title: "STAT 4255 Project Proposal"
+subtitle: "MLB Pitch Design and Whiff Probability"
+author: "Owen Sgro"
+date: today
+format: pdf
+execute:
+  warning: false
+  message: false
+---
+
+## Name of Members
+
+Owen Sgro
+
+## Description of the Problem
+
+- Background: In modern Major League Baseball, front offices heavily rely on optical tracking data (Statcast) to evaluate and develop pitchers. Pitch design involved tweaking a pitcher's release point, velocity, and spin to alter the ball's movement profile.
+- Motivation: Generating swings and misses (whiffs) is the most reliable way for a pitcher to record outs without relying on defensive fielding. Understanding the non-linear relationship between a pitch's physical characteristics and its ability to miss bats is highly valuable for both pre-game scouting and long-term player development.
+- Question of Interest: What combination of velocity, spin rate, release extension, and induced movement maximizes the probability of generating a swing-and-miss on breaking balls (sliders, curveballs, sweepers, etc.)?
+- Significance: Identifying the optimal physical profile for breaking balls allows teams to make targeted, data-driven recommendations to their pitching staff, enhancing overall staff strikeout rates.
+
+## Description of the Data Set
+
+- Source: MLB Statcast pitch-by-pitch data, accessed via the Python pybaseball library. The data is publicly avaliable and has been successfully downloaded and imported.
+- Dimensions: Approximately 10,000 to 15,000 observations. The dataset will be filtered to only include breaking balls thrown by San Francisco Giants pitchers over the 2025 and 2026 seasons.
+- Key Variables:
+    - release_speed : Pitch velocity out of the hand (mph)
+    - release_spin_rate : Spin rate of the pitch (rpm)
+    - pfx_x : Horizontal movement in inches
+    - pfx_z : Induced vertical break in inches
+    - release_extension : How far off the mound the pitcher releases the ball (feet)
+    - description : The outcome of the pitch, which will be changed into a target variable Whiff
+
+## Supervised/Unsupervised. Regression/Classification
+
+This is a supervised classification problem. The goal is to predict a bindary categorical response (Whiff vs No Whiff) based on labeled historical pitch data. The analysis will establish a baseline Logistic Regression model before exploring mroe flexible methods like QDA or KNN to capture non-linear movement boundaries.
+
+## Commens/Concerns
+
+One primary concern is class imblance. In baseball, whiffs occur on roughly 10-15% of all pitches. Because pitch accuracy alone is not an appropriate metric for heavily imbalanced classification, the models will be evaluated and tuned using alternite metrics such as PR-AUC or the F1-score to ensure the models are actually identifying whiffs rather than just predicting no-whiff.
+
+## Data Verification
+
+```{python}
+import pandas as pd
+from pybaseball import statcast
+
+sample_data = statcast(start_dt='2026-05-01', end_dt='2026-05-02')
+
+print(f"Sample dataset shape: {sample_data.shape}")
+print(sample_data[['player_name', 'pitch_type', 'release_speed', 'description']].head())
+```
